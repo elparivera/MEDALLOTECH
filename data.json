@@ -120,8 +120,8 @@
       "favicon": "",
       "ga_id": "",
       "recaptcha_key": "",
-      "pwa_name": "Medallotech",
-      "pwa_active": true
+      "pwa_active": true,
+      "pwa_name": "Medallotech"
     },
     "coupons": [],
     "pages": {
@@ -460,5 +460,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:43:01.938Z"
+  "_savedAt": "2026-03-10T01:48:48.276Z"
 }
