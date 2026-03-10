@@ -153,6 +153,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T01:58:12.671Z",
+      "user": "admin",
+      "action": "Inicio sesión",
+      "details": "admin"
+    },
+    {
       "timestamp": "2026-03-10T01:42:59.074Z",
       "user": "admin",
       "action": "SEO/PWA actualizado",
@@ -460,5 +466,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:57:28.364Z"
+  "_savedAt": "2026-03-10T01:58:12.675Z"
 }
