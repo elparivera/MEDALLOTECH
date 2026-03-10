@@ -64,8 +64,22 @@
       }
     }
   },
-  "users": [],
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "sha256:6da3720ea961702868496955ba388bd8fa0f40ce85a07f4c977356cbdd261394",
+      "email": "",
+      "role": "admin"
+    }
+  ],
   "logs": [
+    {
+      "timestamp": "2026-03-10T02:08:26.102Z",
+      "user": "admin",
+      "action": "Inicio sesión",
+      "details": "admin"
+    },
     {
       "timestamp": "2026-03-10T02:05:32.916Z",
       "user": "Sistema",
@@ -74,5 +88,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:08:14.612Z"
+  "_savedAt": "2026-03-10T02:08:26.102Z"
 }
