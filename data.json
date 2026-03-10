@@ -98,7 +98,7 @@
       "text": "BIENVENIDOS A MEDALLOTECH - COMPRA TUS RECURSOS AQUÍ - ",
       "color": "#000000",
       "bg": "#00ffcc",
-      "speed": "17",
+      "speed": "11",
       "location": "top",
       "direction": "left",
       "fontSize": 0.7,
@@ -152,6 +152,18 @@
     }
   ],
   "logs": [
+    {
+      "timestamp": "2026-03-10T01:12:23.110Z",
+      "user": "admin",
+      "action": "GitHub sync OK",
+      "details": "Datos publicados en línea"
+    },
+    {
+      "timestamp": "2026-03-10T01:12:21.745Z",
+      "user": "admin",
+      "action": "Cinta actualizada",
+      "details": ""
+    },
     {
       "timestamp": "2026-03-10T01:11:40.940Z",
       "user": "admin",
@@ -274,5 +286,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:12:21.735Z"
+  "_savedAt": "2026-03-10T01:12:28.616Z"
 }
