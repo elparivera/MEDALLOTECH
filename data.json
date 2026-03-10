@@ -153,6 +153,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T01:40:41.822Z",
+      "user": "admin",
+      "action": "Backup descargado",
+      "details": ""
+    },
+    {
       "timestamp": "2026-03-10T01:40:32.436Z",
       "user": "admin",
       "action": "Inicio sesión",
@@ -430,5 +436,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:40:39.218Z"
+  "_savedAt": "2026-03-10T01:40:41.826Z"
 }
