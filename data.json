@@ -7,7 +7,7 @@
     "hero_desc": "Software premium y plantillas de alto rendimiento.",
     "matrix_color": "#00ffcc",
     "bg_color": "#030712",
-    "radius": 12,
+    "radius": "12",
     "font_main": "'Outfit', sans-serif",
     "font_accent": "'Syncopate', sans-serif",
     "logo_html": "M",
@@ -75,6 +75,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T02:08:37.022Z",
+      "user": "admin",
+      "action": "Configuración actualizada",
+      "details": ""
+    },
+    {
       "timestamp": "2026-03-10T02:08:26.102Z",
       "user": "admin",
       "action": "Inicio sesión",
@@ -88,5 +94,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:08:26.102Z"
+  "_savedAt": "2026-03-10T02:08:37.022Z"
 }
