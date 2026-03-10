@@ -75,6 +75,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T02:08:42.915Z",
+      "user": "admin",
+      "action": "Cinta actualizada",
+      "details": ""
+    },
+    {
       "timestamp": "2026-03-10T02:08:37.022Z",
       "user": "admin",
       "action": "Configuración actualizada",
@@ -94,5 +100,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:08:42.915Z"
+  "_savedAt": "2026-03-10T02:08:44.368Z"
 }
