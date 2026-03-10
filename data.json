@@ -153,6 +153,18 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T01:22:07.370Z",
+      "user": "admin",
+      "action": "Backup descargado",
+      "details": ""
+    },
+    {
+      "timestamp": "2026-03-10T01:22:06.633Z",
+      "user": "admin",
+      "action": "GitHub sync OK",
+      "details": "Datos publicados en línea"
+    },
+    {
       "timestamp": "2026-03-10T01:22:05.559Z",
       "user": "admin",
       "action": "GitHub sync OK",
@@ -358,5 +370,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:22:05.929Z"
+  "_savedAt": "2026-03-10T01:22:07.373Z"
 }
