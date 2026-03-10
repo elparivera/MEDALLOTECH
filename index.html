@@ -679,7 +679,11 @@
     },
     _isGhConfigured(){
       const c=this._getGhCreds();
-      return !!(c.token&&c.owner&&c.repo);
+      return !!(c.owner&&c.repo); // owner+repo suficiente para leer repos públicos
+    },
+    _canGhWrite(){
+      const c=this._getGhCreds();
+      return !!(c.token&&c.owner&&c.repo); // token requerido para escribir
     },
     _showSyncStatus(state,msg){
       const el=document.getElementById('gh-sync-status');
@@ -697,60 +701,74 @@
 
     async saveData(skipRemote){
       this.saveToLocalStorage();
-      if(!skipRemote&&this._isGhConfigured()){
-        await this._saveToGitHub();
+      if(!skipRemote&&this._canGhWrite()){
+        // fire-and-forget but capture errors
+        this._saveToGitHub().catch(e=>console.error('saveData error:',e));
       }
     },
 
     async _saveToGitHub(){
       const c=this._getGhCreds();
-      this._showSyncStatus('syncing','Guardando en GitHub…');
+      this._showSyncStatus('syncing','Guardando…');
       try{
         const payload={products:this.products,configs:this.configs,users:this.users,logs:this.logs,orders:this.orders,_savedAt:new Date().toISOString()};
-        // exclude sensitive: cart stays local
-        const content=btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+        // encode as base64
+        const json=JSON.stringify(payload,null,2);
+        const content=btoa(unescape(encodeURIComponent(json)));
         const url=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.file}`;
         const headers={'Authorization':'token '+c.token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
-        // get current SHA
+        // ALWAYS fetch fresh SHA before writing (prevents 409 conflicts)
         let sha='';
-        try{const r=await fetch(url,{headers});if(r.ok){const d=await r.json();sha=d.sha||'';}}catch(_){}
-        const body={message:'🔄 Sync data '+new Date().toLocaleTimeString(),content,branch:c.branch};
+        const shaRes=await fetch(url,{headers,cache:'no-store'});
+        if(shaRes.ok){const d=await shaRes.json();sha=d.sha||'';}
+        else if(shaRes.status!==404){
+          const e=await shaRes.json();
+          this._showSyncStatus('error','Error SHA: '+(e.message||shaRes.status));
+          return;
+        }
+        const body={message:'sync '+new Date().toLocaleTimeString('es-CO'),content,branch:c.branch||'main'};
         if(sha)body.sha=sha;
         const res=await fetch(url,{method:'PUT',headers,body:JSON.stringify(body)});
         if(res.ok){
-          this._showSyncStatus('ok','Sincronizado ✓');
-          this.addLog('GitHub sync OK','Datos publicados en línea',true);
+          this._showSyncStatus('ok','✓ Guardado en GitHub');
         }else{
           const err=await res.json();
-          this._showSyncStatus('error','Error: '+(err.message||res.status));
-          console.error('GitHub save error:',err);
+          // 409 = stale SHA, retry once
+          if(res.status===409){
+            this._showSyncStatus('syncing','Reintentando…');
+            await new Promise(r=>setTimeout(r,800));
+            await this._saveToGitHub();
+          }else{
+            this._showSyncStatus('error',(err.message||'Error '+res.status));
+            console.error('GitHub save:',err);
+          }
         }
       }catch(e){
         this._showSyncStatus('error',e.message);
-        console.error('GitHub sync error:',e);
+        console.error('GitHub sync:',e);
       }
     },
 
+    // Siempre usa la Contents API (nunca raw) — sin caché, siempre fresco
     async _loadFromGitHub(){
       const c=this._getGhCreds();
-      if(!c.token||!c.owner||!c.repo)return false;
+      const url=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.file}`;
+      const headers={'Accept':'application/vnd.github.v3+json','Cache-Control':'no-cache'};
+      // Añadir token si existe (necesario para repos privados, ayuda con rate limit)
+      if(c.token)headers['Authorization']='token '+c.token;
       try{
-        // Use raw content for public read (no rate limit issues on public repos)
-        const rawUrl=`https://raw.githubusercontent.com/${c.owner}/${c.repo}/${c.branch}/${c.file}?t=${Date.now()}`;
-        const res=await fetch(rawUrl,{cache:'no-store'});
-        if(!res.ok)return false;
-        const record=await res.json();
-        return record;
+        const res=await fetch(url,{headers,cache:'no-store'});
+        if(!res.ok){
+          if(res.status===404)return null; // archivo aún no existe
+          return null;
+        }
+        const meta=await res.json();
+        // decode base64 content from API response
+        const decoded=decodeURIComponent(escape(atob(meta.content.replace(/\s/g,''))));
+        return JSON.parse(decoded);
       }catch(e){
-        // If raw fails (private repo), try API
-        try{
-          const url=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.file}`;
-          const res=await fetch(url,{headers:{'Authorization':'token '+c.token,'Accept':'application/vnd.github.v3+json'}});
-          if(!res.ok)return false;
-          const meta=await res.json();
-          const decoded=decodeURIComponent(escape(atob(meta.content.replace(/\n/g,''))));
-          return JSON.parse(decoded);
-        }catch(e2){return false;}
+        console.warn('_loadFromGitHub error:',e);
+        return null;
       }
     },
 
@@ -828,7 +846,7 @@
     },
 
     async syncNow(){
-      if(!this._isGhConfigured()){alert('Configura GitHub en SISTEMA primero.');return;}
+      if(!this._canGhWrite()){alert('Configura el token de GitHub en SISTEMA → Sincronización en Tiempo Real.');return;}
       await this._saveToGitHub();
     },
 
@@ -866,25 +884,34 @@
       const loading=document.getElementById('loading-overlay');
       setTimeout(()=>loading.classList.add('fade-out'),1200);
       try{
-        // 1. Load local first (instant UI)
+        // 1. Carga local instantánea
         this.loadFromLocalStorage();
 
-        // 2. Try GitHub (remote source of truth)
+        // 2. Carga desde GitHub (fuente de verdad)
         if(this._isGhConfigured()){
-          this._showSyncStatus('syncing','Cargando datos en línea…');
+          this._showSyncStatus('syncing','Cargando datos…');
           const remote=await this._loadFromGitHub();
-          if(remote){
-            this._applyRecord(remote);
-            this.saveData(); // update local cache
-            this._showSyncStatus('ok','Datos cargados de GitHub');
+          if(remote&&remote._savedAt){
+            // Solo aplicar si GitHub es más reciente
+            const localTs=this.configs._savedAt||'';
+            const remoteTs=remote._savedAt||'';
+            if(!localTs||remoteTs>=localTs){
+              this._applyRecord(remote);
+              this.saveToLocalStorage();
+            }
+            this._showSyncStatus('ok','Datos en línea ✓');
+          }else if(remote===null){
+            // archivo no existe aún — primer uso, crear
+            this._showSyncStatus('syncing','Creando data.json…');
+            await this._saveToGitHub();
           }else{
-            this._showSyncStatus('error','Sin datos remotos, usando local');
+            this._showSyncStatus('error','No se pudo leer GitHub');
           }
         }
 
         if(this.users.length===0){
           this.users.push({id:'1',username:'admin',password:'sha256:'+await hashPassword('admin'),email:'',role:'admin'});
-          this.saveData();
+          this.saveToLocalStorage();
         }
 
         this.applyConfigs();
@@ -902,14 +929,32 @@
         this.renderWhatsAppButton();
         this.renderSocialFooter();
 
-        // Show sync button if GitHub configured
         if(this._isGhConfigured())document.getElementById('btn-sync-now').classList.remove('hidden');
 
         const rem=localStorage.getItem('remembered_user');
         if(rem){document.getElementById('login-username').value=rem;document.getElementById('remember-user').checked=true;}
         document.getElementById('search-input').addEventListener('input',(e)=>this.searchProducts(e.target.value));
 
-        // PWA
+        // Auto-polling: refresca datos de GitHub cada 45s para visitantes
+        if(this._isGhConfigured()){
+          setInterval(async()=>{
+            if(this.currentUser)return; // admin no necesita polling
+            const remote=await this._loadFromGitHub();
+            if(remote&&remote._savedAt){
+              const localTs=this.configs._savedAt||'';
+              if(remote._savedAt>localTs){
+                this._applyRecord(remote);
+                this.saveToLocalStorage();
+                this.applyConfigs();
+                this.renderProducts();
+                this.renderCategories();
+                this.applyMarketing();
+                this.updateNav();
+              }
+            }
+          },45000);
+        }
+
         window.addEventListener('beforeinstallprompt',(e)=>{
           e.preventDefault();this.deferredInstallPrompt=e;
           if(this.configs.seo.pwa_active){
