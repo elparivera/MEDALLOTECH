@@ -120,8 +120,8 @@
       "favicon": "",
       "ga_id": "",
       "recaptcha_key": "",
-      "pwa_active": false,
-      "pwa_name": "Medallotech"
+      "pwa_name": "Medallotech",
+      "pwa_active": true
     },
     "coupons": [],
     "pages": {
@@ -152,6 +152,12 @@
     }
   ],
   "logs": [
+    {
+      "timestamp": "2026-03-10T01:11:24.453Z",
+      "user": "admin",
+      "action": "GitHub sync OK",
+      "details": "Datos publicados en línea"
+    },
     {
       "timestamp": "2026-03-10T01:11:23.649Z",
       "user": "admin",
@@ -256,5 +262,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:11:23.653Z"
+  "_savedAt": "2026-03-10T01:11:40.223Z"
 }
