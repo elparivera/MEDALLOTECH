@@ -75,6 +75,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T02:14:42.700Z",
+      "user": "admin",
+      "action": "Inicio sesión",
+      "details": "admin"
+    },
+    {
       "timestamp": "2026-03-10T02:09:06.917Z",
       "user": "admin",
       "action": "Cinta actualizada",
@@ -106,5 +112,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:09:28.143Z"
+  "_savedAt": "2026-03-10T02:14:42.701Z"
 }
