@@ -20,7 +20,7 @@
       "text": "BIENVENIDOS A MEDALLOTECH — COMPRA TUS RECURSOS AQUÍ — ",
       "color": "#000000",
       "bg": "#00ffcc",
-      "speed": 20,
+      "speed": "35",
       "location": "top",
       "direction": "left",
       "fontSize": 0.7,
@@ -94,5 +94,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:08:38.497Z"
+  "_savedAt": "2026-03-10T02:08:42.915Z"
 }
