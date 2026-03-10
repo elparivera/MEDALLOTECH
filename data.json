@@ -153,6 +153,12 @@
   ],
   "logs": [
     {
+      "timestamp": "2026-03-10T01:58:47.765Z",
+      "user": "admin",
+      "action": "Configuración actualizada",
+      "details": ""
+    },
+    {
       "timestamp": "2026-03-10T01:58:12.671Z",
       "user": "admin",
       "action": "Inicio sesión",
@@ -466,5 +472,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T01:58:47.755Z"
+  "_savedAt": "2026-03-10T01:58:49.728Z"
 }
