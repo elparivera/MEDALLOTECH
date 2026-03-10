@@ -1,5 +1,18 @@
 {
-  "products": [],
+  "products": [
+    {
+      "name": "wee",
+      "price": "",
+      "category": "general",
+      "img": "",
+      "wompi": "",
+      "paypal": "",
+      "demo": "",
+      "description": "",
+      "id": "1773109142706",
+      "views": 0
+    }
+  ],
   "configs": {
     "site_name": "MEDALLOTECH",
     "hero_title": "MEDALLO",
@@ -130,5 +143,5 @@
     }
   ],
   "orders": [],
-  "_savedAt": "2026-03-10T02:18:55.765Z"
+  "_savedAt": "2026-03-10T02:19:02.707Z"
 }
