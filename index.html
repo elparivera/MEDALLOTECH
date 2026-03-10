@@ -724,15 +724,15 @@ window.GH_PUBLIC = {
 
     async _saveToGitHub(){
       const c=this._getGhCreds();
+      if(!c.token){this._showSyncStatus('error','Sin token — configura GitHub en SISTEMA');return;}
       this._showSyncStatus('syncing','Guardando…');
       try{
         const payload={products:this.products,configs:this.configs,users:this.users,logs:this.logs,orders:this.orders,_savedAt:new Date().toISOString()};
-        // encode as base64
         const json=JSON.stringify(payload,null,2);
         const content=btoa(unescape(encodeURIComponent(json)));
         const url=`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${c.file}`;
         const headers={'Authorization':'token '+c.token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
-        // ALWAYS fetch fresh SHA before writing (prevents 409 conflicts)
+        // Buscar SHA fresco (evita 409)
         let sha='';
         const shaRes=await fetch(url,{headers,cache:'no-store'});
         if(shaRes.ok){const d=await shaRes.json();sha=d.sha||'';}
@@ -748,7 +748,6 @@ window.GH_PUBLIC = {
           this._showSyncStatus('ok','✓ Guardado en GitHub');
         }else{
           const err=await res.json();
-          // 409 = stale SHA, retry once
           if(res.status===409){
             this._showSyncStatus('syncing','Reintentando…');
             await new Promise(r=>setTimeout(r,800));
@@ -939,11 +938,15 @@ window.GH_PUBLIC = {
             }
             this._showSyncStatus('ok','Datos en línea ✓');
           }else if(remote===null){
-            // archivo no existe aún — primer uso, crear
-            this._showSyncStatus('syncing','Creando data.json…');
-            await this._saveToGitHub();
+            // archivo no existe aún — solo el admin (con token) puede crearlo
+            if(this._canGhWrite()){
+              this._showSyncStatus('syncing','Creando data.json…');
+              await this._saveToGitHub();
+            }
+            // visitante sin token: usa datos locales, sin mostrar error
           }else{
-            this._showSyncStatus('error','No se pudo leer GitHub');
+            // error de red — silencioso para visitantes
+            console.warn('GitHub: no se pudo leer, usando datos locales');
           }
         }
 
